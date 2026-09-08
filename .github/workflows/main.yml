@@ -1,4 +1,4 @@
-name: Build Pico 2 UF2 (Fixed Paths)
+name: Build Pico 2 UF2 (usbliter8ipad9)
 
 on: [push, workflow_dispatch]
 
@@ -20,15 +20,20 @@ jobs:
           git clone --depth 1 --branch 2.0.0 https://github.com/raspberrypi/pico-sdk.git /home/runner/pico-sdk
           cd /home/runner/pico-sdk && git submodule update --init && cd ..
 
-      - name: Fetch pio_usb
+      - name: Setup pio_usb submodule / folder
         run: |
-          git clone https://github.com/sekigon-gonnoc/Pico-PIO-USB.git /home/runner/pio_usb
+          git submodule update --init --recursive || true
+          if [ ! -d "pio_usb" ]; then
+            git clone https://github.com/sekigon-gonnoc/Pico-PIO-USB.git pio_usb
+          fi
+          if [ ! -d "Pico-PIO-USB" ]; then
+            git clone https://github.com/sekigon-gonnoc/Pico-PIO-USB.git Pico-PIO-USB
+          fi
 
       - name: Build Project
         run: |
-          mkdir build && cd build
+          mkdir -p build && cd build
           export PICO_SDK_PATH=/home/runner/pico-sdk
-          export PICO_PIO_USB_PATH=/home/runner/pio_usb
           cmake -DPICO_BOARD=pico2 ..
           make -j$(nproc)
 
