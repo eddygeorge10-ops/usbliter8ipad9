@@ -20,6 +20,10 @@ jobs:
           git clone --depth 1 --branch 2.0.0 https://github.com/raspberrypi/pico-sdk.git
           cd pico-sdk && git submodule update --init && cd ..
 
+      - name: Fetch pio_usb
+        run: |
+          git clone https://github.com/sekigon-gonnoc/Pico-PIO-USB.git pio_usb
+
       - name: Build Project
         run: |
           mkdir build && cd build
