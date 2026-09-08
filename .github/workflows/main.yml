@@ -1,4 +1,4 @@
-name: Build Pico 2 UF2
+name: Build Pico 2 UF2 (Fixed Paths)
 
 on: [push, workflow_dispatch]
 
@@ -15,19 +15,20 @@ jobs:
           sudo apt-get update
           sudo apt-get install -y cmake gcc-arm-none-eabi libnewlib-arm-none-eabi build-essential
 
-      - name: Fetch Pico SDK
+      - name: Fetch Pico SDK (v2.0.0)
         run: |
-          git clone --depth 1 --branch 2.0.0 https://github.com/raspberrypi/pico-sdk.git
-          cd pico-sdk && git submodule update --init && cd ..
+          git clone --depth 1 --branch 2.0.0 https://github.com/raspberrypi/pico-sdk.git /home/runner/pico-sdk
+          cd /home/runner/pico-sdk && git submodule update --init && cd ..
 
       - name: Fetch pio_usb
         run: |
-          git clone https://github.com/sekigon-gonnoc/Pico-PIO-USB.git pio_usb
+          git clone https://github.com/sekigon-gonnoc/Pico-PIO-USB.git /home/runner/pio_usb
 
       - name: Build Project
         run: |
           mkdir build && cd build
-          export PICO_SDK_PATH=$PWD/../pico-sdk
+          export PICO_SDK_PATH=/home/runner/pico-sdk
+          export PICO_PIO_USB_PATH=/home/runner/pio_usb
           cmake -DPICO_BOARD=pico2 ..
           make -j$(nproc)
 
