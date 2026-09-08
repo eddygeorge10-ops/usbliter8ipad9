@@ -20,21 +20,17 @@ jobs:
           git clone --depth 1 --branch 2.0.0 https://github.com/raspberrypi/pico-sdk.git /home/runner/pico-sdk
           cd /home/runner/pico-sdk && git submodule update --init && cd ..
 
-      - name: Setup pio_usb submodule / folder
+      - name: Setup pio_usb
         run: |
-          git submodule update --init --recursive || true
-          if [ ! -d "pio_usb" ]; then
-            git clone https://github.com/sekigon-gonnoc/Pico-PIO-USB.git pio_usb
-          fi
-          if [ ! -d "Pico-PIO-USB" ]; then
-            git clone https://github.com/sekigon-gonnoc/Pico-PIO-USB.git Pico-PIO-USB
-          fi
+          git clone https://github.com/sekigon-gonnoc/Pico-PIO-USB.git pio_usb
+          git clone https://github.com/sekigon-gonnoc/Pico-PIO-USB.git Pico-PIO-USB
 
       - name: Build Project
         run: |
           mkdir -p build && cd build
           export PICO_SDK_PATH=/home/runner/pico-sdk
-          cmake -DPICO_BOARD=pico2 ..
+          export CPATH=$PWD/../pio_usb/src:$PWD/../Pico-PIO-USB/src
+          cmake -DPICO_BOARD=pico2 -DPICO_SDK_PATH=/home/runner/pico-sdk -DPIO_USB_PATH=$PWD/../pio_usb ..
           make -j$(nproc)
 
       - name: Upload UF2 Artifact
